@@ -1,4 +1,5 @@
 com\example\kirana\controller\AuthController.class
+com\example\kirana\model\SignupRequest.class
 com\example\kirana\security\JwtUtil.class
 com\example\kirana\dto\DebtResponseDTO$CustomerDTO.class
 com\example\kirana\WebConfig$1.class
@@ -6,7 +7,6 @@ com\example\kirana\model\User.class
 com\example\kirana\repository\CustomerRepository.class
 com\example\kirana\security\LoggingFilter.class
 com\example\kirana\controller\CustomerController.class
-com\example\kirana\controller\SignupRequest.class
 com\example\kirana\KiranaApplication.class
 com\example\kirana\repository\UserRepository.class
 com\example\kirana\security\CustomAccessDeniedHandler.class

@@ -1,6 +1,5 @@
 C:\my_new_space\sreejita-kirana-shop\src\main\java\com\example\kirana\model\Debt.java
 C:\my_new_space\sreejita-kirana-shop\src\main\java\com\example\kirana\controller\DebtController.java
-C:\my_new_space\sreejita-kirana-shop\src\main\java\com\example\kirana\controller\SignupRequest.java
 C:\my_new_space\sreejita-kirana-shop\src\main\java\com\example\kirana\WebConfig.java
 C:\my_new_space\sreejita-kirana-shop\src\main\java\com\example\kirana\dto\DebtResponseDTO.java
 C:\my_new_space\sreejita-kirana-shop\src\main\java\com\example\kirana\security\JwtUtil.java
@@ -18,3 +17,4 @@ C:\my_new_space\sreejita-kirana-shop\src\main\java\com\example\kirana\repository
 C:\my_new_space\sreejita-kirana-shop\src\main\java\com\example\kirana\security\SecurityConfig.java
 C:\my_new_space\sreejita-kirana-shop\src\main\java\com\fasterxml\jackson\annotation\JsonIgnore.java
 C:\my_new_space\sreejita-kirana-shop\src\main\java\com\example\kirana\KiranaApplication.java
+C:\my_new_space\sreejita-kirana-shop\src\main\java\com\example\kirana\model\SignupRequest.java

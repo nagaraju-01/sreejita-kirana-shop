@@ -1,5 +1,6 @@
 package com.example.kirana.controller;
 
+import com.example.kirana.model.SignupRequest;
 import com.example.kirana.model.User;
 import com.example.kirana.repository.UserRepository;
 import com.example.kirana.security.JwtUtil;
@@ -32,6 +33,8 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<Map<String, String>> signup(@Valid @RequestBody SignupRequest signupRequest) {
+        logger.info("Received signup request for username: {}", signupRequest.getUsername());
+
         if (signupRequest.getUsername() == null || signupRequest.getUsername().trim().isEmpty()) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
@@ -62,6 +65,8 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<Map<String, String>> signin(@RequestBody Map<String, String> loginRequest) {
+        logger.info("Received signin request for username: {}", loginRequest.get("username"));
+        
         String userId = loginRequest.get("userId");
         String username = loginRequest.get("username");
         String password = loginRequest.get("password");
