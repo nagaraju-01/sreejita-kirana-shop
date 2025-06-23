@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -120,7 +121,7 @@ public class DebtController {
         debtRepository.deleteById(debtId);
         // Reassign serial numbers for remaining debts
         List<Debt> debts = debtRepository.findByCustomer(customer);
-        debts.sort((d1, d2) -> d1.getDate().compareTo(d2.getDate())); // or any other order you want
+        debts.sort(Comparator.comparing(Debt::getDate).thenComparing(Debt::getDebtId)); // stable order: by date, then debtId
         for (int i = 0; i < debts.size(); i++) {
             debts.get(i).setSerialNumber(i + 1);
         }
