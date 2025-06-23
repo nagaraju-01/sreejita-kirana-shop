@@ -83,17 +83,17 @@ public class DebtController {
         if (customer == null) return ResponseEntity.notFound().build();
         List<Debt> debts;
         if (page != null && size != null) {
-            Pageable pageable = PageRequest.of(page, size);
+            Pageable pageable = PageRequest.of(page, size, org.springframework.data.domain.Sort.by("serialNumber"));
             debts = debtRepository.findByCustomer(customer, pageable).getContent();
         } else {
             debts = debtRepository.findByCustomer(customer);
+            // Sort debts by serialNumber before mapping to DTOs for consistent ordering
+            debts.sort(Comparator.comparingInt(Debt::getSerialNumber));
         }
         // If no records found, return empty list
         if (debts == null || debts.isEmpty()) {
             return ResponseEntity.ok(List.of());
         }
-        // Sort debts by serialNumber before mapping to DTOs for consistent ordering
-        debts.sort(Comparator.comparingInt(Debt::getSerialNumber));
         List<DebtResponseDTO> dtos = debts.stream().map(debt -> {
             DebtResponseDTO dto = new DebtResponseDTO();
             dto.setDebtId(debt.getDebtId());
