@@ -92,6 +92,8 @@ public class DebtController {
         if (debts == null || debts.isEmpty()) {
             return ResponseEntity.ok(List.of());
         }
+        // Sort debts by serialNumber before mapping to DTOs for consistent ordering
+        debts.sort(Comparator.comparingInt(Debt::getSerialNumber));
         List<DebtResponseDTO> dtos = debts.stream().map(debt -> {
             DebtResponseDTO dto = new DebtResponseDTO();
             dto.setDebtId(debt.getDebtId());
