@@ -116,4 +116,32 @@ public class CustomerController {
         );
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping("/{customerId}")
+    public ResponseEntity<Map<String, String>> updateCustomer(@PathVariable String customerId, @RequestBody Map<String, String> updates) {
+        Customer customer = customerRepository.findById(customerId).orElse(null);
+        if (customer == null) {
+            return ResponseEntity.notFound().build();
+        }
+        boolean changed = false;
+        if (updates.containsKey("name")) {
+            customer.setName(updates.get("name"));
+            changed = true;
+        }
+        if (updates.containsKey("contact")) {
+            customer.setContact(updates.get("contact"));
+            changed = true;
+        }
+        if (!changed) {
+            return ResponseEntity.badRequest().build();
+        }
+        Customer savedCustomer = customerRepository.save(customer);
+        Map<String, String> response = Map.of(
+            "customerId", savedCustomer.getCustomerId(),
+            "name", savedCustomer.getName(),
+            "contact", savedCustomer.getContact(),
+            "userId", savedCustomer.getUser().getUserId()
+        );
+        return ResponseEntity.ok(response);
+    }
 }
