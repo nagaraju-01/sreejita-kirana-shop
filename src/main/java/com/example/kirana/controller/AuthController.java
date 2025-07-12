@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @RestController
 public class AuthController {
@@ -66,7 +68,6 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<Map<String, String>> signin(@RequestBody Map<String, String> loginRequest) {
         logger.info("Received signin request for username: {}", loginRequest.get("username"));
-        
         String userId = loginRequest.get("userId");
         String username = loginRequest.get("username");
         String password = loginRequest.get("password");
@@ -77,9 +78,17 @@ public class AuthController {
             dbUser = userRepository.findByUsername(username);
         }
         if (dbUser != null && passwordEncoder.matches(password, dbUser.getPassword())) {
+            // Generate refresh token as JWT with userId as subject
+            String refreshToken = Jwts.builder()
+                .setSubject(dbUser.getUserId())
+                .setIssuedAt(new java.util.Date())
+                .setExpiration(new java.util.Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7)) // 7 days
+                .signWith(SignatureAlgorithm.HS256, jwtUtil.getSecretKey())
+                .compact();
             return ResponseEntity.ok(Map.of(
                     "state", "success",
                     "token", jwtUtil.generateToken(dbUser.getUserId()),
+                    "refreshToken", refreshToken,
                     "userId", dbUser.getUserId(),
                     "message", "Signin successful"
             ));
@@ -90,5 +99,30 @@ public class AuthController {
                         "state", "failed",
                         "error", "Invalid credentials"
                 ));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<Map<String, String>> refresh(@RequestBody Map<String, String> request) {
+        String refreshToken = request.get("refreshToken");
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid refresh token"));
+        }
+        String userId;
+        try {
+            userId = Jwts.parser().setSigningKey(jwtUtil.getSecretKey())
+                .parseClaimsJws(refreshToken).getBody().getSubject();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid or expired refresh token"));
+        }
+        User dbUser = userRepository.findByUserId(userId);
+        if (dbUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid user"));
+        }
+        // Issue new access token
+        return ResponseEntity.ok(Map.of(
+            "token", jwtUtil.generateToken(dbUser.getUserId()),
+            "userId", dbUser.getUserId(),
+            "message", "Token refreshed"
+        ));
     }
 }

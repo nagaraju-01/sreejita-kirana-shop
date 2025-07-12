@@ -11,6 +11,7 @@ public class User {
     @Column(unique = true)
     private String username;
     private String password; // Store hashed password in production
+    private String refreshToken;
 
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
@@ -20,4 +21,6 @@ public class User {
     }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+    public String getRefreshToken() { return refreshToken; }
+    public void setRefreshToken(String refreshToken) { this.refreshToken = refreshToken; }
 }

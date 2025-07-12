@@ -25,4 +25,9 @@ public class JwtUtil {
         return Jwts.parser().setSigningKey(SECRET_KEY)
                 .parseClaimsJws(token).getBody().getSubject();
     }
+
+    // Add this method to JwtUtil
+    public String getSecretKey() {
+        return SECRET_KEY;
+    }
 }
