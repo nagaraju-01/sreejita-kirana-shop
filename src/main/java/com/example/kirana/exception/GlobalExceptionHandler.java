@@ -10,6 +10,8 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DataAccessException;
+import org.springframework.transaction.CannotCreateTransactionException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -68,6 +70,15 @@ public class GlobalExceptionHandler {
         }
         error.put("error", "Data integrity violation: " + rootCauseMessage);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    // Handle database/service outage
+    @ExceptionHandler({CannotCreateTransactionException.class, DataAccessException.class})
+    public ResponseEntity<Map<String, String>> handleDatabaseDown(Exception ex) {
+        logger.error("Database/service unavailable", ex);
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Service temporarily unavailable. Please try again later.");
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
     }
 
     @ExceptionHandler(Exception.class)
