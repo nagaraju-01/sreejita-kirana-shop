@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.jsonwebtoken.Jwts;
@@ -23,6 +24,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @RestController
 public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+
+    // Token expiration constants
+    public static final long ACCESS_TOKEN_EXPIRY_MINUTES = 10;
+    public static final long REFRESH_TOKEN_EXPIRY_DAYS = 7;
+    public static final long ACCESS_TOKEN_EXPIRY_MILLIS = TimeUnit.MINUTES.toMillis(ACCESS_TOKEN_EXPIRY_MINUTES);
+    public static final long REFRESH_TOKEN_EXPIRY_MILLIS = TimeUnit.DAYS.toMillis(REFRESH_TOKEN_EXPIRY_DAYS);
 
     @Autowired
     private UserRepository userRepository;
@@ -82,7 +89,7 @@ public class AuthController {
             String refreshToken = Jwts.builder()
                 .setSubject(dbUser.getUserId())
                 .setIssuedAt(new java.util.Date())
-                .setExpiration(new java.util.Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7)) // 7 days
+                .setExpiration(new java.util.Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRY_MILLIS))
                 .signWith(SignatureAlgorithm.HS256, jwtUtil.getSecretKey())
                 .compact();
             return ResponseEntity.ok(Map.of(
@@ -90,6 +97,8 @@ public class AuthController {
                     "token", jwtUtil.generateToken(dbUser.getUserId()),
                     "refreshToken", refreshToken,
                     "userId", dbUser.getUserId(),
+                    "accessTokenExpiryMinutes", String.valueOf(ACCESS_TOKEN_EXPIRY_MINUTES),
+                    "refreshTokenExpiryDays", String.valueOf(REFRESH_TOKEN_EXPIRY_DAYS),
                     "message", "Signin successful"
             ));
         }
@@ -122,6 +131,7 @@ public class AuthController {
         return ResponseEntity.ok(Map.of(
             "token", jwtUtil.generateToken(dbUser.getUserId()),
             "userId", dbUser.getUserId(),
+            "accessTokenExpiryMinutes", String.valueOf(ACCESS_TOKEN_EXPIRY_MINUTES),
             "message", "Token refreshed"
         ));
     }

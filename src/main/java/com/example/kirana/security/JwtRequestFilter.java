@@ -58,6 +58,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
-        return path.equals("/signin") || path.equals("/signup");
+        return path.equals("/signin") || path.equals("/signup") || path.equals("/refresh");
     }
 }
